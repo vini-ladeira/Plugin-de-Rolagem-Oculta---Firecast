@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form name="rolagemoculta" formType="tablesDock" dataType="rolagemoculta" title="Rolagem Oculta" align="client" theme="dark">
+        <script>
+        --Rolagem oculta
+                function rolagemdedados()
+                        local mesaDoPersonagem = Firecast.getMesaDe(sheet);
+                        msg = ""; 
+                        qtdados = sheet.qtdados;
+                        vldados = sheet.vldados;
+                        dado = qtdados .. "D" .. vldados
+                        rolagem = Firecast.interpretarRolagem(dado); 
+                        rolagem:rolarLocalmente();
+
+                        for i = 1, #rolagem.ops, 1 do  
+                                local operacao = rolagem.ops[i];      
+
+                                if operacao.tipo == "dado" then        
+                                        msg = msg .. operacao.quantidade .. "d" .. operacao.face .. ": \n  ";               
+
+                                        for j = 1, #operacao.resultados, 1 do
+                                                msg = msg .. "  " .. operacao.resultados[j];
+                                        end;               
+
+                                        msg = msg .. "\n";
+                                elseif operacao.tipo == "imediato" then
+                                        msg = msg .. "Valor imediato: " .. operacao.valor .. "\n";
+                                end;
+                        end; 
+
+                        msg = msg .. "------------------- \nResultado Somado: " .. rolagem.resultado; 
+
+                        showMessage(msg);
+                        mesaDoPersonagem.chat:enviarMensagem("O narrador rolou os dados...");
+
+                end;
+
+
+        --Adicionar qt. dado
+                function dadomaisqt()
+                        sheet.qtdados = (sheet.qtdados or 0) + 1;
+                        end;
+        --Remover vl. dado
+        <![CDATA[ 
+                function dadomenosqt()
+                        sheet.qtdados = (sheet.qtdados or 0) - 1;
+                                if sheet.qtdados < 0 then
+                                sheet.qtdados = 0;
+                                end;
+                        end;
+        ]]>
+        
+        </script>
+
+        <layout left="30" top="10" width="300" height="300">
+                <edit left="0" top="64" field="qtdados" readOnly="false" type="number" min="0"/>
+                <comboBox left="100" top="42" width="70" height="75" field="vldados" items="{'D4', 'D6', 'D8', 'D10', 'D12', 'D20', 'D100'}" values="{'4', '6', '8', '10', '12', '20', '100'}"/>
+                <button left="0" top="42" width="100" text="+" onClick="dadomaisqt()"/>
+                <button left="0" top="96" width="100" text="-" onClick="dadomenosqt()"/>
+                <button left="60" top="160" width="100" text="Rolar" onClick="rolagemdedados()"/>
+        </layout>
+</form>
